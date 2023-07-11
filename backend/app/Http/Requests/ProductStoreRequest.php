@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use  Illuminate\Validation\Validator;
 
-class ProsuctStoreRequest extends FormRequest
+class ProductStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,18 +22,16 @@ class ProsuctStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        if(request()->isMethod(post)){
+        if(request()->isMethod('post')){
             return [
                 'name' => 'required|string|max:258',
-                'image' => 'required|image|mines:jpg, png,gif,svg|max:2048',
+                'image' => 'required|image|mimes:jpg,png,gif,svg|max:2048',
                 'description' => 'required|string'
-
             ];
-
         }else{
             return [
                 'name' => 'required|string|max:258',
-                'image' => 'nullable|image|mines:jpg, png,gif,svg|max:2048',
+                'image' => 'nullable|image|mimes:jpg,png,gif,svg|max:2048',
                 'description' => 'required|string'
             ];
 

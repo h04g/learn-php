@@ -19,8 +19,8 @@ class ProductController extends Controller
         //
         $products = Product::all();
 
-        return response() -> json([
-            'product' => $products
+        return response()->json([
+            'products' => $products
         ],200);
     }
 
@@ -52,7 +52,7 @@ class ProductController extends Controller
             //Save Image IN Storage Folder
             Storage::disk('public')->put($imageName, file_get_contents($request->image));
 
-            return respone()->json([
+            return response()->json([
                 'message'=>"Product Successfully Create"
             ]);
 
@@ -68,9 +68,22 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         //
+        //Product Deatils
+        $product = Product::find($id);
+        if(!$product){
+            return response()->json([
+                'message'=> 'Products Not Found'
+            ],404);
+
+
+           
+        }
+        return response()->json([
+            'product'=> $product
+        ], 200);
     }
 
     /**
@@ -84,9 +97,37 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ProductStoreRequest $request, $id)
     {
         //
+        try {
+            //Find products
+            $product = Product::find($id);
+            if(!$product){
+                return response()->json([
+                    'message'=> 'Product Not Found'
+                ], 404);
+            }
+
+            echo "request: $request->name";
+            echo "description: $request->description";
+
+            $product->name = $request->name;
+            $product->description = $request->description;
+
+
+
+            return response()->json([
+                'message'=> 'Product Updated'
+            ], 200);
+
+        } catch (\Exception $e){
+            return response()->json([
+                'message'=> 'Something went wrong'
+            ], 500);
+        }
+
+        
     }
 
     /**
