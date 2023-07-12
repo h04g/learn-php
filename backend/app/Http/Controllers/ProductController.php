@@ -109,13 +109,33 @@ class ProductController extends Controller
                 ], 404);
             }
 
-            echo "request: $request->name";
-            echo "description: $request->description";
+            // echo "request: $request->name";
+            // echo "description: $request->description";
 
             $product->name = $request->name;
             $product->description = $request->description;
 
+            if($request->image){
+                //Public Storage
+                $storage = Storage::disk('public');
 
+                //delete old image
+
+                if($storage->exists($product->image));
+                $storage->delete($product->image);
+
+                //image name
+                $imageName = Str::random(32).".".$request->image->getClientOriginalExtension();
+                $product->image = $imageName;
+
+                //save image in public folder
+
+                $storage->put($imageName, file_get_contents($request->image));
+
+            }
+
+            //Upadte product
+            $product->save();
 
             return response()->json([
                 'message'=> 'Product Updated'
@@ -135,6 +155,29 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        //Details
+        $product = Product::find($id);
+
+        if(!$product){
+            return response()->json([
+                'message'=>'Product not found'
+            ],404);
+        }
+        //Public Storage
+        $storage = Storage::disk('public');
+
+        //delete image
+
+        if($storage->exists($product->image));
+        $storage->delete($product->image);
+
+        //delete product
+        $product->delete();
+
+        return response()->json([
+            'message'=>'Product delete Success'
+        ], 200);
+
+
     }
 }
